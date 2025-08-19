@@ -1,0 +1,21 @@
+<div class="mt-4">
+  <h1>Task Details</h1>
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title"><%= @task.title %></h5>
+      <p class="card-text"><strong>Description:</strong> <%= @task.description %></p>
+      <p class="card-text"><strong>Status:</strong> <%= @task.completed ? "Completed" : "Not Completed" %></p>
+      <p class="card-text">
+        <strong>File:</strong>
+        <% if @task.file.attached? %>
+          <%= link_to @task.file.filename, rails_blob_path(@task.file, disposition: "attachment") %>
+        <% else %>
+          No file attached
+        <% end %>
+      </p>
+      <%= link_to "Edit", edit_task_path(@task), class: "btn btn-warning" %>
+      <%= link_to "Back", tasks_path, class: "btn btn-secondary" %>
+      <%= link_to "Delete", task_path(@task), class: "btn btn-danger", data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this task?" } %>
+    </div>
+  </div>
+</div>
