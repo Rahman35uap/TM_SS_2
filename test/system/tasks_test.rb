@@ -2,7 +2,18 @@ require "application_system_test_case"
 
 class TasksTest < ApplicationSystemTestCase
   setup do
-    @task = tasks(:one) # Assumes a fixture with a task
+    @user = users(:test_user) # Use fixture user
+    @task = tasks(:one)
+    @task.update(user: @user) # Ensure task belongs to test user
+    login_as(@user)
+  end
+
+  def login_as(user)
+    visit new_user_session_path
+    fill_in "Email", with: user.email
+    fill_in "Password", with: "password123"
+    click_on "Log in"
+    assert_text "Signed in successfully"
   end
 
   test "visiting the index" do
@@ -10,6 +21,7 @@ class TasksTest < ApplicationSystemTestCase
     assert_selector "h1", text: "Tasks"
     assert_selector "table"
     assert_text @task.title
+    assert_text "Welcome, #{@user.email}" # Test user email display
   end
 
   test "should create task with valid file" do
@@ -32,7 +44,7 @@ class TasksTest < ApplicationSystemTestCase
     fill_in "Description", with: "Duplicate title test"
     click_on "Create Task"
 
-    assert_text "Title has already been taken"
+    assert_text "Title has already been taken for this user"
   end
 
   test "should not create task without title" do
@@ -89,11 +101,27 @@ class TasksTest < ApplicationSystemTestCase
 
   test "should destroy task with confirmation" do
     visit tasks_url
-    assert_text "Test Task 1" # Ensure the task exists before deletion
+    assert_text "Test Task 1" # Ensure task exists
     page.accept_confirm do
       click_link "Delete", href: task_path(@task)
     end
     assert_text "Task was successfully deleted"
     assert_no_text "Test Task 1"
+  end
+
+  test "should redirect to login when not authenticated" do
+    logout
+    visit tasks_url
+    assert_current_path new_user_session_path
+    assert_text "Log in"
+  end
+
+  private
+
+  def logout
+    # Simulate DELETE request for logout
+    page.driver.submit :delete, destroy_user_session_path, {}
+    visit root_path # Redirect to a safe page after logout
+    assert_text "Signed out successfully"
   end
 end
