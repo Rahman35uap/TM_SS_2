@@ -111,6 +111,7 @@ class TasksTest < ApplicationSystemTestCase
 
   test "should redirect to login when not authenticated" do
     logout
+    assert_text "Log in"
     visit tasks_url
     assert_current_path new_user_session_path
     assert_text "Log in"
