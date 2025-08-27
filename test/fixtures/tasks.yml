@@ -2,10 +2,10 @@ one:
   title: Test Task 1
   description: This is the first test task
   completed: false
-  user: test_user
+  user: test_user1
 
 two:
   title: Test Task 2
   description: This is the second test task
   completed: true
-  user: test_user
+  user: test_user1
