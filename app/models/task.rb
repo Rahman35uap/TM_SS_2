@@ -1,8 +1,9 @@
 class Task < ApplicationRecord
+  belongs_to :user
   has_one_attached :file
   attr_accessor :remove_file
 
-  validates :title, presence: true, length: { maximum: 255 }, uniqueness: { message: "has already been taken" }
+  validates :title, presence: true, length: { maximum: 255 }, uniqueness: { scope: :user_id, message: "has already been taken for this user" }
   validates :description, length: { maximum: 1000 }, allow_blank: true
   validate :file_validation
 

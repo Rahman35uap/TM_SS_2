@@ -1,22 +1,24 @@
+# app/controllers/tasks_controller.rb
 class TasksController < ApplicationController
+  before_action :authenticate_user! # Add this line to ensure user is authenticated
   before_action :set_task, only: %i[show edit update destroy]
 
   def index
-    @tasks = Task.all
+    @tasks = current_user.tasks # Only current user's tasks will be shown
   end
 
   def show
   end
 
   def new
-    @task = Task.new
+    @task = current_user.tasks.new # Associated with current user
   end
 
   def edit
   end
 
   def create
-    @task = Task.new(task_params)
+    @task = current_user.tasks.new(task_params) # current user এর সাথে associate করুন
     if @task.save
       redirect_to @task, notice: "Task was successfully created."
     else
@@ -43,7 +45,7 @@ class TasksController < ApplicationController
   private
 
   def set_task
-    @task = Task.find(params[:id])
+    @task = current_user.tasks.find(params[:id]) # Only current user's tasks will be accessed
   end
 
   def task_params
