@@ -1,11 +1,11 @@
 require "application_system_test_case"
 
-class TasksTest < ApplicationSystemTestCase
+class Tasks2Test < ApplicationSystemTestCase
   setup do
-    @user1 = users(:test_user1) # Use fixture user
+    @user2 = users(:test_user2) # Use fixture user
     @task = tasks(:one)
-    @task.update(user: @user1) # Ensure task belongs to test user
-    login_as(@user1)
+    @task.update(user: @user2) # Ensure task belongs to test user
+    login_as(@user2)
   end
 
   def login_as(user)
@@ -22,7 +22,7 @@ class TasksTest < ApplicationSystemTestCase
     assert_selector "h1", text: "Tasks"
     assert_selector "table"
     assert_text @task.title
-    assert_text "Welcome, #{@user1.email}" # Test user email display
+    assert_text "Welcome, #{@user2.email}" # Test user email display
   end
 
   test "should create task with valid file" do
@@ -82,17 +82,17 @@ class TasksTest < ApplicationSystemTestCase
   test "should update task" do
     visit edit_task_path(@task)
     # assert_text "Update Task"
-    fill_in "Title", with: "Update Task"
+    fill_in "Title", with: "Updated Task"
     fill_in "Description", with: "Updated description"
     uncheck "Completed"
     attach_file "File", Rails.root.join("test/fixtures/files/sample.pdf")
     click_on "Update Task"
 
     assert_text "Task was successfully updated"
-    # assert_text "Updated Task"
-    # assert_text "Updated description"
-    # assert_text "Not Completed"
-    # assert_text "sample.pdf"
+    assert_text "Updated Task"
+    assert_text "Updated description"
+    assert_text "Not Completed"
+    assert_text "sample.pdf"
   end
 
   test "should remove file on update" do
@@ -125,12 +125,13 @@ class TasksTest < ApplicationSystemTestCase
   end
 
   test "Same title should be able to create by different users" do
-    @user2 = users(:test_user2) # Another fixture user
+    @user1 = users(:test_user1) # Another fixture user
     logout
-    login_as(@user2)
+    login_as(@user1)
 
     visit new_task_url
-    fill_in "Title", with: @task.title # Same title as @user1's task
+    assert_text "Title"
+    fill_in "Title", with: @task.title # Same title as @user2's task
     fill_in "Description", with: "Task by different user"
     click_on "Create Task"
 
